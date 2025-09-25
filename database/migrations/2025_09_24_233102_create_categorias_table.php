@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre_categoria');
             $table->string('descripcion')->nullable();
-            $table->string('estado_categoria')->default('activo');
+            $table->string('estado_categoria')->default('inactivo');
             $table->timestamps();
         });
     }

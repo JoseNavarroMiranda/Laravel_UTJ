@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -9,5 +9,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-#Se agrega la ruta de recursos para el controldor de creacion dew clientes
+#Se agrega la ruta de recursos para el controldor de creacion de clientes
 Route::resource('cliente', App\Http\Controllers\ClienteController::class);
+#Se agrega la ruta de recursos para el controldor de creacion de proveedores
+Route::resource('proveedor', App\Http\Controllers\ProveedorController::class);

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->char('rfc', 13);
             $table->string('email');
             $table->string('password');
-            $table->string('estado_proveedor')->default('activo');
+            $table->string('estado_proveedor')->default('inactivo');
             $table->timestamps();
         });
     }
