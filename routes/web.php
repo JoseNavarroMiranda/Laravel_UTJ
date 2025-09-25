@@ -13,3 +13,5 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::resource('cliente', App\Http\Controllers\ClienteController::class);
 #Se agrega la ruta de recursos para el controldor de creacion de proveedores
 Route::resource('proveedor', App\Http\Controllers\ProveedorController::class);
+#Se agrega la ruta de recursos para el controldor de creacion de categorias
+Route::resource('categoria', App\Http\Controllers\CategoriaController::class);
