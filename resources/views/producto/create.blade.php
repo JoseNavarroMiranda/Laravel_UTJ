@@ -35,17 +35,18 @@
            <div class="form-group">
                <label for="nombre">categoria</label>
                <input type="text" class="form-control" id="categoria_id" name="categoria_id" placeholder="Selecciona el tipo de categoria" value={{old('categoria_id')}} >
+           </div>
             <div class="form-group">
                <label for="nombre">proveedor</label>
                <input type="text" class="form-control" id="proveedor_id" name="proveedor_id" placeholder="Selecciona el proveedor" value={{old('proveedor_id')}}>
             </div> 
             <div class="form-group">
-               <label for="imagen">Imagen del producto</label>
-               <input type="file" class="form-control" id="imagen" name="imagen">
+               <label for="imagen_producto">Imagen del producto</label>
+               <input type="file" class="form-control" id="imagen_producto" name="imagen_producto">
             </div>
             <div class="form-group">
-               <label for="video">Video del producto</label>
-               <input type="file" class="form-control" id="video" name="video">
+               <label for="video_producto">Video del producto</label>
+               <input type="file" class="form-control" id="video_producto" name="video_producto">
             </div>
            <button type="submit" class="btn btn-success">Registrar Producto</button>
        </form>

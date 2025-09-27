@@ -33,8 +33,8 @@ class ProductoController extends Controller
             'descripcion' => 'required',
             'precio' => 'required|numeric',
             'stock' => 'required|integer',
-            'imagen_producto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'video_producto' => 'nullable|mimetypes:video/mp4,video|max:20000',    
+            'imagen_producto' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'video_producto'  => 'required|image|mimes:jpeg,png,jpg,gif,svg',    
             'categoria_id' => 'required',
             'proveedor_id' => 'required',
         ]);
