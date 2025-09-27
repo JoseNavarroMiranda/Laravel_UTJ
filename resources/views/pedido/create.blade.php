@@ -2,7 +2,7 @@
 @section('content')
 <div class="container">
    <div class="row">
-       <h2>Registro de Producto</h2>
+       <h2>Registro de Pedido</h2>
 </div>
 <div class="row">
        <form action="{{ route('pedido.store') }}" method="post" enctype="multipart/form-data" class="col-lg-7">
@@ -17,33 +17,26 @@
                </div>
            @endif
            <div class="form-group">
-               <label for="nombre">nombre</label>
-               <input type="text" class="form-control" id="nombre" name="nombre" value={{old('nombre')}} >
-           </div>
-            <div class="form-group">
-               <label for="nombre">domicilio</label>
-               <input type="text" class="form-control" id="domicilio" name="domicilio" value={{old('domicilio')}} >
+               <label for="fecha_pedido">Fecha del pedido</label>
+               <input type="date" class="form-control" id="fecha_pedido" name="fecha_pedido" value="{{ old('fecha_pedido') }}">
            </div>
            <div class="form-group">
-               <label for="nombre">ciudad</label>
-               <input type="text" class="form-control" id="ciudad" name="ciudad" value={{old('ciudad')}} >
+               <label for="estado_pedido">Estado del pedido</label>
+               <input type="text" class="form-control" id="estado_pedido" name="estado_pedido" placeholder="Ej. pendiente" value="{{ old('estado_pedido') }}">
            </div>
            <div class="form-group">
-               <label for="nombre">C.P</label>
-               <input type="text" class="form-control" id="cp" name="cp" placeholder="Ej. 45654" value={{old('cp')}}>
+               <label for="metodo_pago">Método de pago</label>
+               <input type="text" class="form-control" id="metodo_pago" name="metodo_pago" placeholder="Ej. tarjeta, efectivo" value="{{ old('metodo_pago') }}">
            </div>
-            <div class="form-group">
-               <label for="nombre">telefono</label>
-               <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingresa un numero telefonico NO mayor a 10 digitos" value={{old('telefono')}} >
-            <div class="form-group">
-               <label for="nombre">email</label>
-               <input type="text" class="form-control" id="email" name="email" value={{old('email')}}>
-            </div>
-            <div class="form-group">
-               <label for="nombre">password</label>
-               <input type="text" class="form-control" id="password" name="password" placeholder="Ingresa una contraseña segura" value={{old('password')}}>
-           </div>      
-           <button type="submit" class="btn btn-success">Registrar Cliente</button>
+           <div class="form-group">
+               <label for="total">Total</label>
+               <input type="number" class="form-control" id="total" name="total" step="0.01" min="0" value="{{ old('total') }}">
+           </div>
+           <div class="form-group">
+               <label for="cliente_id">ID del cliente</label>
+               <input type="number" class="form-control" id="cliente_id" name="cliente_id" placeholder="Ingresa el ID del cliente" value="{{ old('cliente_id') }}">
+           </div>
+           <button type="submit" class="btn btn-success">Registrar Pedido</button>
        </form>
    </div>
 </div>

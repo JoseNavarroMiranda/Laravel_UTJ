@@ -17,3 +17,5 @@ Route::resource('proveedor', App\Http\Controllers\ProveedorController::class);
 Route::resource('categoria', App\Http\Controllers\CategoriaController::class);
 #Se agrega la ruta de recursos para el controldor de creacion de productos
 Route::resource('producto', App\Http\Controllers\ProductoController::class);
+#se agrega la ruta de recursos para el controldor de creacion de ventas
+Route::resource('pedido', App\Http\Controllers\PedidoController::class);
