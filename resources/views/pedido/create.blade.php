@@ -7,6 +7,11 @@
 <div class="row">
        <form action="{{ route('pedido.store') }}" method="post" enctype="multipart/form-data" class="col-lg-7">
            @csrf <!-- Protección contra ataques ya implementado en laravel  https://www.welivesecurity.com/la-es/2015/04/21/vulnerabilidad-cross-site-request-forgery-csrf/-->
+           @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
            @if($errors->any())
                <div class="alert alert-danger">
                    <ul>
