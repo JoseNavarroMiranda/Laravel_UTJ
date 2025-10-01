@@ -67,7 +67,11 @@ class ProveedorController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        //Esta funcion nos permitira eidtar el perfil de proveedor, haciendo la busqueda por id
+        $proveedor = Proveedor::findorFail($id);
+        return view('proveedors.edit',  array(
+            'proveedor' => $proveedor
+        ));
     }
 
     /**
@@ -75,7 +79,26 @@ class ProveedorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        //Guardamos los cambios realizados en el pefil de proveedor
+        $this->validate($request, [
+            'nombre' => 'required',
+            'domicilio' => 'required',
+            'ciudad' => 'required',
+            'cp' => 'required|digits:5',
+            'telefono' => 'required|digits:10',
+            'rfc' => 'required|size:13',
+            'email' => 'required',
+        ]);
+        $proveedor = Proveedor::findorFail($id);
+        $proveedor->nombre = $request->input('nombre');
+        $proveedor->domicilio = $request->input('domicilio');
+        $proveedor->ciudad = $request->input('ciudad');
+        $proveedor->cp = $request->input('cp');
+        $proveedor->telefono = $request->input('telefono');
+        $proveedor->rfc = $request->input('rfc');
+        $proveedor->email = $request->input('email');
+        $proveedor->update();
+        return redirect()->route('proveedor.edit', $id)->with('success', 'Perfil actualizado exitosamente.');       
     }
 
     /**
