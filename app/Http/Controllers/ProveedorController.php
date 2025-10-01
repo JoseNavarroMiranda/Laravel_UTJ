@@ -98,7 +98,7 @@ class ProveedorController extends Controller
         $proveedor->rfc = $request->input('rfc');
         $proveedor->email = $request->input('email');
         $proveedor->update();
-        return redirect()->route('proveedor.edit', $id)->with('success', 'Perfil actualizado exitosamente.');       
+        return redirect()->route('proveedor.edit', $id)->with('success', 'Proveedor actualizado exitosamente.');       
     }
 
     /**
