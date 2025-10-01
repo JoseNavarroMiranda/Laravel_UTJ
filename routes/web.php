@@ -21,3 +21,17 @@ Route::resource('producto', App\Http\Controllers\ProductoController::class);
 Route::resource('pedido', App\Http\Controllers\PedidoController::class);
 #se agrega la ruta de recursos para el controldor de creacion de detalles de ventas
 Route::resource('pedido_detalle', App\Http\Controllers\PedidoDetalleController::class);
+//Ruta de guardar videos de assets 
+Route::resource('asset', App\Http\Controllers\ASSETController::class)->middleware('auth');
+
+
+
+## se ingresar las rutas de video y imagenes
+Route::get('/images/{filename}', array(
+   'as' => 'fileVideo',
+   'uses' => 'App\Http\Controllers\AssetController@getVideo'
+));
+Route::get('/videos/{filename}', array(
+   'as' => 'imageVideo',
+   'uses' => 'App\Http\Controllers\AssetController@getImage'
+));
