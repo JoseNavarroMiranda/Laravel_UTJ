@@ -64,7 +64,11 @@ class ClienteController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        // esta funcion nos permitira realizar cambios en los datos del cliente, nos traera los datos del cliente y los mostrara en el formulario de edicion
+        $cliente = Cliente::findorFail($id);
+        return view('cliente.edit',  array(
+            'cliente' => $cliente
+        ));
     }
 
     /**
@@ -72,7 +76,25 @@ class ClienteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        //Guardaremos los cambios realizados en el formulario de edicion
+        $this->validate($request, [
+            'nombre' => 'required',
+            'domicilio' => 'required',
+            'ciudad' => 'required',
+            'cp' => 'required|digits:5',
+            'telefono' => 'required|digits:10',
+            'email' => 'required',
+        ]);
+        $cliente = Cliente::findorFail($id);
+        $cliente->nombre = $request->input('nombre');
+        $cliente->domicilio = $request->input('domicilio');
+        $cliente->ciudad = $request->input('ciudad');
+        $cliente->cp = $request->input('cp');
+        $cliente->telefono = $request->input('telefono');
+        $cliente->email = $request->input('email');
+        $cliente->password = bcrypt($request->input('password'));
+        $cliente->save();
+        return redirect() -> route('cliente.create')->with(array('message' => 'Cliente actualizado correctamente'));
     }
 
     /**
