@@ -1,11 +1,13 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+
 class ClienteController extends Controller
 {
     /**
@@ -13,16 +15,10 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        //
+        $clientes = Cliente::select('id', 'nombre', 'domicilio', 'ciudad', 'cp', 'telefono', 'email')->get();
+        return view('cliente.index', ['clientes' => $clientes]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('cliente.create');
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -48,7 +44,6 @@ class ClienteController extends Controller
         $cliente->password = bcrypt($request->input('password'));
         $cliente->save();
         return redirect()->route('cliente.create')->with('success', 'Cliente creado exitosamente.');
-
     }
 
     /**
@@ -94,7 +89,7 @@ class ClienteController extends Controller
         $cliente->email = $request->input('email');
         $cliente->password = bcrypt($request->input('password'));
         $cliente->save();
-        return redirect() -> route('cliente.create', $id)->with('susccess', 'Cliente actualizado correctamente');
+        return redirect()->route('cliente.create', $id)->with('susccess', 'Cliente actualizado correctamente');
     }
 
     /**
@@ -105,3 +100,6 @@ class ClienteController extends Controller
         //
     }
 }
+
+
+
