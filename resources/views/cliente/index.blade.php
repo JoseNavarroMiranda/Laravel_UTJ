@@ -1,4 +1,4 @@
-﻿@extends('adminlte::page')
+@extends('adminlte::page')
 @section('css')
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
@@ -73,7 +73,7 @@
     <script>
         const clientesData = @json($clientes);
         const editUrlTemplate = "{{ route('cliente.edit', ':id') }}";
-        const deleteUrlTemplate = "{{ route('cliente.destroy', ':id') }}";
+        const deleteUrlTemplate = "{{ route('cliente.delete', ['cliente' => ':id']) }}";
 
         const encodeAttr = (value) => String(value ?? '')
             .replace(/&/g, '&amp;')

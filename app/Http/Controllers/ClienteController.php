@@ -16,7 +16,14 @@ class ClienteController extends Controller
     public function index()
     {
         $clientes = Cliente::select('id', 'nombre', 'domicilio', 'ciudad', 'cp', 'telefono', 'email')->get();
-        return view('cliente.index', ['clientes' => $clientes]);
+        return view('cliente.index', ['clientes' => $this->cargarDT($clientes)]);
+    }
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('cliente.create');
     }
 
 
@@ -95,10 +102,33 @@ class ClienteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function deleteCliente(string $id)
     {
-        //
+        //Eliminaremos el cliente seleccionado de la base de datos
+        $cliente = Cliente::findorFail($id);
+        $cliente->delete();
+        return redirect()->route('cliente.index')->with('success', 'Cliente eliminado correctamente');
     }
+
+    private function cargarDT($consulta)
+    {
+        $clientes = [];
+
+        foreach ($consulta as $cliente) {
+            $clientes[] = [
+                'id' => $cliente->id,
+                'nombre' => $cliente->nombre,
+                'domicilio' => $cliente->domicilio,
+                'ciudad' => $cliente->ciudad,
+                'cp' => $cliente->cp,
+                'telefono' => $cliente->telefono,
+                'email' => $cliente->email,
+            ];
+        }
+
+        return $clientes;
+    }
+
 }
 
 

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +11,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 #Se agrega la ruta de recursos para el controldor de creacion de clientes
 Route::resource('cliente', App\Http\Controllers\ClienteController::class);
+Route::delete('cliente/{cliente}/eliminar', [App\Http\Controllers\ClienteController::class, 'deleteCliente'])->name('cliente.delete');
 #Se agrega la ruta de recursos para el controldor de creacion de proveedores
 Route::resource('proveedor', App\Http\Controllers\ProveedorController::class);
 #Se agrega la ruta de recursos para el controldor de creacion de categorias
