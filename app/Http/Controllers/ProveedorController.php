@@ -14,6 +14,8 @@ class ProveedorController extends Controller
      */
     public function index()
     {
+        $provedor = Proveedor::select('id', 'nombre', 'domicilio', 'ciudad', 'cp', 'telefono', 'rfc', 'email', 'estado_proveedor')->get();
+        return view('proveedors.index', ['provedors' => $this->cargarDT($provedor)]);  
 
     }
 
@@ -106,8 +108,32 @@ class ProveedorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function deleteProveedor(string $id)
     {
-        //
+        $proveedor = Proveedor::findorFail($id);
+        $proveedor->delete();
+        return redirect()->route('proveedor.index')->with('success', 'Proveedor eliminado exitosamente.');
     }
+
+    private function cargarDT($data)
+    {
+        $dataTable = [];
+        foreach ($data as $item) {
+            $acciones = '<a href="' . route('proveedor.edit', $item->id) . '" class="btn btn-primary btn-sm">Editar</a>';
+            $dataTable[] = [
+                'id' => $item->id,
+                'nombre' => $item->nombre,
+                'domicilio' => $item->domicilio,
+                'ciudad' => $item->ciudad,
+                'cp' => $item->cp,
+                'telefono' => $item->telefono,
+                'rfc' => $item->rfc,
+                'email' => $item->email,
+                'estado_proveedor' => $item->estado_proveedor,
+                'acciones' => $acciones,
+            ];
+        }
+        return $dataTable;
+    }
+
 }
