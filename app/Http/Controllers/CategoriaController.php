@@ -53,7 +53,10 @@ class CategoriaController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $categoria = Categoria::findorFail($id);
+        return view('categoria.edit', array(
+            'categoria' => $categoria
+        ));
     }
 
     /**
@@ -61,7 +64,17 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $this->validate($request, [
+            'nombre_categoria' => 'required',
+            'descripcion' => 'nullable',
+            'estado_categoria' => 'required',
+        ]);
+        $categoria = Categoria::findOrFail($id);
+        $categoria->nombre_categoria = $request->input('nombre_categoria');
+        $categoria->descripcion = $request->input('descripcion');
+        $categoria->estado_categoria = $request->input('estado_categoria');
+        $categoria->save();
+        return redirect()->route('categoria.edit',$id)->with('success', 'Categoría actualizada exitosamente.');
     }
 
     /**
