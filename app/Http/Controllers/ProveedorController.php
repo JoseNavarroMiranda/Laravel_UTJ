@@ -88,6 +88,7 @@ class ProveedorController extends Controller
             'telefono' => 'required|digits:10',
             'rfc' => 'required|size:13',
             'email' => 'required',
+            'estado_proveedor' => 'required',
         ]);
         $proveedor = Proveedor::findorFail($id);
         $proveedor->nombre = $request->input('nombre');
@@ -97,6 +98,7 @@ class ProveedorController extends Controller
         $proveedor->telefono = $request->input('telefono');
         $proveedor->rfc = $request->input('rfc');
         $proveedor->email = $request->input('email');
+        $proveedor->estado_proveedor = $request->input('estado_proveedor');
         $proveedor->update();
         return redirect()->route('proveedor.edit', $id)->with('success', 'Proveedor actualizado exitosamente.');       
     }

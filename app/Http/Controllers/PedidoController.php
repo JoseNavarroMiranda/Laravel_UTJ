@@ -58,7 +58,10 @@ class PedidoController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $pedido = Pedido::findorFail($id);
+        return view('pedido.edit', array(
+            'pedido' => $pedido
+        ));
     }
 
     /**
@@ -66,7 +69,21 @@ class PedidoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $this->validate ($request, [
+            'fecha_pedido' => 'required|date',
+            'estado_pedido' => 'required|string',
+            'metodo_pago' => 'required|string',
+            'total' => 'required|numeric',
+            'cliente_id' => 'required|exists:clientes,id',
+        ]);
+        $pedido = Pedido::findorFail($id);
+        $pedido->fecha_pedido = $request->input('fecha_pedido');
+        $pedido->estado_pedido = $request->input('estado_pedido');
+        $pedido->metodo_pago = $request->input('metodo_pago');
+        $pedido->total = $request->input('total');
+        $pedido->cliente_id = $request->input('cliente_id');
+        $pedido->save();
+        return redirect()->route('pedido.edit', $id)->with('success', 'Pedido actualizado exitosamente.');
     }
 
     /**

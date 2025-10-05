@@ -46,6 +46,12 @@
                 <div class="form-group">
                     <label for="email">Correo electronico</label>
                     <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $proveedor->email) }}" required>
+                </div>                <div class="form-group">
+                    <label for="estado_proveedor">Estado del proveedor</label>
+                    <select class="form-control" id="estado_proveedor" name="estado_proveedor" required>
+                        <option value="activo" {{ old('estado_proveedor', $proveedor->estado_proveedor) === 'activo' ? 'selected' : '' }}>Activo</option>
+                        <option value="inactivo" {{ old('estado_proveedor', $proveedor->estado_proveedor) === 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Actualizar proveedor</button>
             </form>

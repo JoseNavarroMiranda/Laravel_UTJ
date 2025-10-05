@@ -59,7 +59,10 @@ class PedidoDetalleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $PedidoDetalle = Pedido_Detalle::findOrFail($id);
+        return view('pedido_detalle.edit', array(
+            'pedido_detalle' => $PedidoDetalle
+        ));
     }
 
     /**
@@ -68,6 +71,21 @@ class PedidoDetalleController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $this->validate($request, [
+            'cantidad' => 'required|integer',
+            'precio_unitario' => 'required|numeric',
+            'subtotal' => 'required|numeric',
+            'pedido_id' => 'required|exists:pedidos,id',
+            'producto_id' => 'required|exists:productos,id',
+        ]);
+        $PedidoDetalle = Pedido_Detalle::findOrFail($id);
+        $PedidoDetalle->cantidad = $request->input('cantidad');
+        $PedidoDetalle->precio_unitario = $request->input('precio_unitario');
+        $PedidoDetalle->subtotal = $request->input('subtotal');
+        $PedidoDetalle->pedido_id = $request->input('pedido_id');
+        $PedidoDetalle->producto_id = $request->input('producto_id');
+        $PedidoDetalle->save();
+        return redirect()->route('pedido_detalle.edit', $id)->with('success', 'Detalle del pedido actualizado exitosamente.');
     }
 
     /**
