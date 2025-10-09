@@ -12,7 +12,11 @@ class CategoriaController extends Controller
      */
     public function index()
     {
-        //
+        $categoria = Categoria::activos()
+            ->select('id', 'nombre_categoria', 'descripcion', 'estado_categoria')
+            ->get();
+        return view('categoria.index', ['categorias' => $this->cargarDT($categoria)]);
+        
     }
 
     /**
@@ -80,8 +84,29 @@ class CategoriaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function deteleCategoria(string $id)
     {
-        //
+        $categoria = Categoria::findorFail($id);
+        $categoria->delete();
+        return redirect()->route('categoria.index')->with('success', 'Categoria elimina correctamente');
+    }
+
+    private function cargarDT($data){
+
+        $dataTable = [];
+        foreach ($data as $item){
+            $acciones = '<a href="' . route('categoria.edit', $item->id) . '" class="btn btn-primary btn-sm">Editar</a>';
+            $datatTable[] = [
+                'id' => $item->id,
+                'nombre_categoria' => $item->nombre_categoria,
+                'descripcion' => $item->descipcion,
+                'estado_categoria' => $item->estado_categoria,
+                'acciones' => $acciones,
+
+            ];
+
+        }
+        return $dataTable;
+
     }
 }

@@ -14,7 +14,9 @@ class ProveedorController extends Controller
      */
     public function index()
     {
-        $provedor = Proveedor::select('id', 'nombre', 'domicilio', 'ciudad', 'cp', 'telefono', 'rfc', 'email', 'estado_proveedor')->get();
+        $provedor = Proveedor::activos()
+            ->select('id', 'nombre', 'domicilio', 'ciudad', 'cp', 'telefono', 'rfc', 'email', 'estado_proveedor')
+            ->get();
         return view('proveedors.index', ['provedors' => $this->cargarDT($provedor)]);  
 
     }
