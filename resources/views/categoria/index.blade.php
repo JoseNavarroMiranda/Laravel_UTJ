@@ -36,6 +36,27 @@
             </table>
         </div>
     </div>
+    <div class="modal fade" id="categoriaConfirmDelete" tabindex="-1" aria-labelledby="categoriaConfirmDeleteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="categoriaConfirmDeleteLabel">Eliminar categoría</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Confirma la eliminación de la categoría <strong id="categoria-nombre"></strong>.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="deleteCategoriaForm" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('js')
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
@@ -46,15 +67,30 @@
     <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.html5.min.js"></script>
     <script>
         const categoriasData = @json($categorias);
+        const editUrlTemplate = "{{ route('categoria.edit', ':id') }}";
+        const deleteUrlTemplate = "{{ route('categoria.delete', ['categoria' => ':id']) }}";
+
+        const encodeAttr = (value) => String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
 
         $(document).ready(function () {
-            const tableData = Array.isArray(categoriasData) ? categoriasData.map((categoria) => ({
-                acciones: categoria.acciones ?? '',
-                id: categoria.id,
-                nombre: categoria.nombre_categoria ?? '',
-                descripcion: categoria.descripcion ?? '',
-                estado: categoria.estado_categoria ?? ''
-            })) : [];
+            const tableData = Array.isArray(categoriasData) ? categoriasData.map((categoria) => {
+                const editUrl = editUrlTemplate.replace(':id', categoria.id);
+                const deleteUrl = deleteUrlTemplate.replace(':id', categoria.id);
+                const nombreAttr = encodeAttr(categoria.nombre_categoria);
+                const deleteButton = `<button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#categoriaConfirmDelete" data-categoria-nombre="${nombreAttr}" data-categoria-delete="${deleteUrl}">Eliminar</button>`;
+                const editButton = `<a href="${editUrl}" class="btn btn-sm btn-primary me-1">Editar</a>`;
+                return {
+                    acciones: editButton + deleteButton,
+                    id: categoria.id,
+                    nombre: categoria.nombre_categoria ?? '',
+                    descripcion: categoria.descripcion ?? '',
+                    estado: categoria.estado_categoria ?? ''
+                };
+            }) : [];
 
             $('#categorias-table').DataTable({
                 data: tableData,
@@ -100,6 +136,24 @@
                     }
                 ]
             });
+
+            const deleteModal = document.getElementById('categoriaConfirmDelete');
+            if (deleteModal) {
+                deleteModal.addEventListener('show.bs.modal', function (event) {
+                    const trigger = event.relatedTarget;
+                    if (!trigger) return;
+                    const categoriaNombre = trigger.getAttribute('data-categoria-nombre') || '';
+                    const deleteUrl = trigger.getAttribute('data-categoria-delete');
+                    const nombreContainer = document.getElementById('categoria-nombre');
+                    if (nombreContainer) {
+                        nombreContainer.textContent = categoriaNombre;
+                    }
+                    const deleteForm = document.getElementById('deleteCategoriaForm');
+                    if (deleteForm && deleteUrl) {
+                        deleteForm.action = deleteUrl;
+                    }
+                });
+            }
         });
     </script>
 @endsection

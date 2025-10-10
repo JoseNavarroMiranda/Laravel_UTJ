@@ -73,7 +73,8 @@
     <script>
         const proveedoresData = @json($provedors);
         const editUrlTemplate = "{{ route('proveedor.edit', ':id') }}";
-        const deleteUrlTemplate = "{{ url('proveedor') }}/:id/eliminar";
+        const deleteUrlTemplate = "{{ route('proveedor.delete', ['proveedor' => ':id']) }}";
+
 
         const encodeAttr = (value) => String(value ?? '')
             .replace(/&/g, '&amp;')

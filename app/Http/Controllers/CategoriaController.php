@@ -91,22 +91,19 @@ class CategoriaController extends Controller
         return redirect()->route('categoria.index')->with('success', 'Categoria elimina correctamente');
     }
 
-    private function cargarDT($data){
-
+    private function cargarDT($data)
+    {
         $dataTable = [];
-        foreach ($data as $item){
+        foreach ($data as $item) {
             $acciones = '<a href="' . route('categoria.edit', $item->id) . '" class="btn btn-primary btn-sm">Editar</a>';
-            $datatTable[] = [
+            $dataTable[] = [
                 'id' => $item->id,
                 'nombre_categoria' => $item->nombre_categoria,
-                'descripcion' => $item->descipcion,
+                'descripcion' => $item->descripcion,
                 'estado_categoria' => $item->estado_categoria,
                 'acciones' => $acciones,
-
             ];
-
         }
         return $dataTable;
-
     }
 }

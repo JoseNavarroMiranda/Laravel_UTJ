@@ -110,7 +110,7 @@ class ProveedorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function deleteProveedor(string $id)
+    public function deleteProveedor($id)
     {
         $proveedor = Proveedor::findorFail($id);
         $proveedor->delete();

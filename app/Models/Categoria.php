@@ -8,6 +8,6 @@ class Categoria extends Model
 {
     public function scopeActivos($query)
     {
-    return $query-> Where('estado_categoria', 'activo');
-    }   
+        return $query->where('estado_categoria', 'activo');
+    }
 }
