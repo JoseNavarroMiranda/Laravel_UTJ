@@ -5,18 +5,17 @@
         </div>
         <div class="vb-flex-spacer"></div>
         <div class="vb-auth">
-            @php($clienteNombre = session('cliente_nombre'))
-            @auth
+            @php($clienteNombreSesion = session('cliente_nombre'))
+            @php($clienteActual = Auth::guard('clientes')->user())
+            @if($clienteActual)
                 <span class="muted">Bienvenido,</span>
-                <strong>{{ Auth::user()->name ?? Auth::user()->email }}</strong>
+                <strong>{{ $clienteActual->nombre ?? $clienteActual->email }}</strong>
+            @elseif($clienteNombreSesion)
+                <span class="muted">Bienvenido,</span>
+                <strong>{{ $clienteNombreSesion }}</strong>
             @else
-                @if($clienteNombre)
-                    <span class="muted">Bienvenido,</span>
-                    <strong>{{ $clienteNombre }}</strong>
-                @else
-                    <span class="muted">No has iniciado sesión</span>
-                @endif
-            @endauth
+                <span class="muted">No has iniciado sesion</span>
+            @endif
         </div>
     </div>
 
@@ -37,3 +36,5 @@
         .vb-auth strong { color: #fff; }
     </style>
 </nav>
+
+

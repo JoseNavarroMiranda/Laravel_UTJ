@@ -27,5 +27,11 @@ Route::resource('pedido_detalle', App\Http\Controllers\PedidoDetalleController::
 
 // Ruta para mostrar la vista de login y registro de clientes
 Route::get('login/cliente', [App\Http\Controllers\ClienteController::class, 'loginCliente'])->name('cliente.login');
+Route::post('login/cliente', [App\Http\Controllers\ClienteController::class, 'Login'])->name('cliente.login.post');
+
 Route::get('registrar/cliente', [App\Http\Controllers\ClienteController::class, 'registerCliente'])->name('cliente.register');
 
+Route::middleware('auth:clientes')->group(function () {
+    Route::get('dashboard/', [App\Http\Controllers\ClienteController::class, 'dashboardclient'])->name('dashboardecommerce.index');
+    Route::post('logout/cliente', [App\Http\Controllers\ClienteController::class, 'logout'])->name('cliente.logout');
+});

@@ -143,6 +143,10 @@ class ClienteController extends Controller
         return view('clientelogin.register');
     }
     
+    public function dashboardclient(){
+        return view ('dashboardecommerce.index');
+    }
+    
     public function Login(Request $request){
 
         $cliente = $request->validate([
@@ -151,14 +155,28 @@ class ClienteController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($cliente)){
+        if (Auth::guard('clientes')->attempt($cliente)){
             $request->session()->regenerate();
-            return redirect()->intended('dashboardecommerce.index');
+            $clienteAutenticado = Auth::guard('clientes')->user();
+            if ($clienteAutenticado) {
+                $request->session()->put('cliente_nombre', $clienteAutenticado->nombre ?? $clienteAutenticado->email);
+            }
+            return redirect()->intended(route('dashboardecommerce.index'));
         }
 
         return back()->withErrors([
             'email' => 'Las credencias no coinciden, favor de verificar nuevamente'
         ])->onlyInput('email');
+    }
+    
+    public function logout(Request $request)
+    {
+        Auth::guard('clientes')->logout();
+        $request->session()->forget('cliente_nombre');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('cliente.login')->with('status', 'Sesion cerrada correctamente');
     }
 
 

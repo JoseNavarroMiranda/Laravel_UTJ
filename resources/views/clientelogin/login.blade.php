@@ -1,18 +1,18 @@
 @extends('vistasbase.body')
-@section('title', 'Iniciar sesión')
-@section('page_header', 'Iniciar sesión')
+@section('title', 'Iniciar sesion')
+@section('page_header', 'Iniciar sesion')
 @section('content')
     <div class="card card-auth">
         <div class="card-body">
             @if ($errors->any())
                 <div class="error" style="margin-bottom:12px;">
                     @foreach ($errors->all() as $error)
-                        <div>• {{ $error }}</div>
+                        <div>- {{ $error }}</div>
                     @endforeach
                 </div>
             @endif
 
-            <form method="POST" action="#">
+            <form method="POST" action="{{ route('cliente.login.post') }}">
                 @csrf
 
                 <div class="grid">
@@ -21,7 +21,7 @@
                         <input class="input" id="email" name="email" type="email" placeholder="tu@correo.com" required>
                     </div>
                     <div>
-                        <label class="label" for="password">Contraseña</label>
+                        <label class="label" for="password">Contrasena</label>
                         <input class="input" id="password" name="password" type="password" required>
                     </div>
                 </div>
@@ -31,7 +31,7 @@
 
                 <div class="spacer"></div>
                 <div class="muted" style="text-align:center;">
-                    ¿No tienes cuenta?
+                    No tienes cuenta?
                     {{-- Usa la ruta que prefieras: cliente.register o cliente.create --}}
                     <a href="{{ route('cliente.register', [], false) ?: route('cliente.create') }}">Crear cuenta</a>
                 </div>
