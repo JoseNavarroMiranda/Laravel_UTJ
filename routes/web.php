@@ -24,3 +24,8 @@ Route::resource('producto', App\Http\Controllers\ProductoController::class);
 Route::resource('pedido', App\Http\Controllers\PedidoController::class);
 #se agrega la ruta de recursos para el controldor de creacion de detalles de ventas
 Route::resource('pedido_detalle', App\Http\Controllers\PedidoDetalleController::class);
+
+// Ruta para mostrar la vista de login y registro de clientes
+Route::get('login/cliente', [App\Http\Controllers\ClienteController::class, 'loginCliente'])->name('cliente.login');
+Route::get('registrar/cliente', [App\Http\Controllers\ClienteController::class, 'registerCliente'])->name('cliente.register');
+

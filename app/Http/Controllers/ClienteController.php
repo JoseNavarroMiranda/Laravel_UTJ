@@ -50,7 +50,7 @@ class ClienteController extends Controller
         $cliente->email = $request->input('email');
         $cliente->password = bcrypt($request->input('password'));
         $cliente->save();
-        return redirect()->route('cliente.create')->with('success', 'Cliente creado exitosamente.');
+        return redirect()->route('cliente.login')->with('success', 'Se ah registrado usuario de manera correcta');
     }
 
     /**
@@ -129,7 +129,21 @@ class ClienteController extends Controller
         return $clientes;
     }
 
-}
 
+    #Funciones de ecommerce, puede que se llegue a tomar algunas funciones sobre las que ya estaban, 
+    #esto para poder ahorrar tiempo
+    
+    public function loginCliente()
+    {
+        return view('clientelogin.login');
+    }
+
+    
+    public function registerCliente(){
+        return view('clientelogin.register');
+    }
+    
+
+}
 
 
