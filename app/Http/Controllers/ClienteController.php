@@ -143,6 +143,24 @@ class ClienteController extends Controller
         return view('clientelogin.register');
     }
     
+    public function Login(Request $request){
+
+        $cliente = $request->validate([
+
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($cliente)){
+            $request->session()->regenerate();
+            return redirect()->intended('dashboardecommerce.index');
+        }
+
+        return back()->withErrors([
+            'email' => 'Las credencias no coinciden, favor de verificar nuevamente'
+        ])->onlyInput('email');
+    }
+
 
 }
 

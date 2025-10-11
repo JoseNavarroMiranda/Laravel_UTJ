@@ -1,8 +1,6 @@
 @extends('vistasbase.body')
-
 @section('title', 'Iniciar sesión')
 @section('page_header', 'Iniciar sesión')
-
 @section('content')
     <div class="card card-auth">
         <div class="card-body">
