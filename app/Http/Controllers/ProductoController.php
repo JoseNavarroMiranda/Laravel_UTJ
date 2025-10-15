@@ -125,4 +125,13 @@ class ProductoController extends Controller
     {
         //
     }
+
+
+    #Funciones que se utilizaran para el ecommerce de proyecto
+
+    public function indexProductos(){
+        
+    }
+
+
 }

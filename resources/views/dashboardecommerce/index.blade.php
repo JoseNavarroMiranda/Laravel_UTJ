@@ -9,15 +9,7 @@
     <section class="dashboard-shell">
         <div class="dashboard-card card">
             <div class="card-body">
-                <h2 class="dashboard-title">Bienvenido</h2>
-                <p class="dashboard-copy">
-                    Aqui veras tus datos de pedidos, direcciones guardadas y novedades de LineaBlanca una vez que
-                    hayamos conectado el flujo despues del inicio de sesion.
-                </p>
-                <p class="dashboard-copy">
-                    Mientras tanto, esta pagina confirma que la plantilla ya hereda el navbar y el footer para el area
-                    del cliente.
-                </p>
+                <h2 class="dashboard-title">Productos</h2>
             </div>
         </div>
     </section>
