@@ -12,7 +12,7 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
@@ -129,8 +129,14 @@ class ProductoController extends Controller
 
     #Funciones que se utilizaran para el ecommerce de proyecto
 
-    public function indexProductos(){
-        
+    public function indexProductos()
+    {
+        $Productos = Producto::activos()
+            ->select('id','nombre_producto','descripcion','precio','stock',)
+            ->orderBy('nombre_producto')
+            ->get();
+        return view('pruductosdash.productos', compact('productos'));
+    
     }
 
 
