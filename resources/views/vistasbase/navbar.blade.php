@@ -1,7 +1,7 @@
 <nav class="vb-navbar">
     <div class="vb-navbar-inner container">
         <div class="vb-brand">
-            <a href="{{ url('/') }}">LineaBlanca</a>
+            <a>LineaBlanca</a>
         </div>
         <div class="vb-flex-spacer"></div>
         <div class="vb-auth">

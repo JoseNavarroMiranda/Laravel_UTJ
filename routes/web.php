@@ -31,6 +31,11 @@ Route::post('login/cliente', [App\Http\Controllers\ClienteController::class, 'Lo
 Route::get('dashboard/', [App\Http\Controllers\ClienteController::class, 'dashboardclient'])->name('dashboardecommerce.index');
 Route::get('registrar/cliente', [App\Http\Controllers\ClienteController::class, 'registerCliente'])->name('cliente.register');
 
+//Rutas para vistas de productos
+Route::get('dashboard/producto', [App\Http\Controllers\ProductoController::class, 'showProducto'])->name('productosdash.produco');
+
+
+
 Route::middleware('auth:clientes')->group(function () {
     Route::post('logout/cliente', [App\Http\Controllers\ClienteController::class, 'logout'])->name('cliente.logout');
 });

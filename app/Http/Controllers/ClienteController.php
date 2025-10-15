@@ -145,9 +145,8 @@ class ClienteController extends Controller
     }
     
     public function dashboardclient(){
-        $productos = Producto::query()
+        $productos = Producto::activos()
             ->select('id', 'nombre_producto', 'descripcion', 'precio', 'stock', 'estado_producto', 'imagen_producto', 'video_producto')
-            ->orderBy('estado_producto')
             ->orderBy('nombre_producto')
             ->get();
 
@@ -188,4 +187,3 @@ class ClienteController extends Controller
 
 
 }
-

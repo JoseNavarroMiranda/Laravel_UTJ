@@ -63,9 +63,11 @@ class ProductoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Producto $producto)
     {
-        //
+        return view('productosdash.producto', [
+            'producto' => $producto,
+        ]);
     }
 
     /**
@@ -105,6 +107,7 @@ class ProductoController extends Controller
             $imageName = time().'.'.$request->imagen_producto->extension();  
             $request->imagen_producto->move(public_path('images'), $imageName);
             $Producto->imagen_producto = $imageName;
+        }
         if ($request->hasFile('video_producto')) {
             $videoName = time().'.'.$request->video_producto->extension();  
             $request->video_producto->move(public_path('videos'), $videoName);
@@ -114,7 +117,6 @@ class ProductoController extends Controller
         $Producto->proveedor_id = $request->input('proveedor_id');
         $Producto->save();
         return redirect()->route('producto.create', $id)->with('success', 'se ah actualiza el producto de manera correcta');
-    }
     
     }
 
@@ -137,6 +139,14 @@ class ProductoController extends Controller
             ->get();
         return view('pruductosdash.productos', compact('productos'));
     
+    }
+
+    #funcion para mostrar tarjeta de producto
+    public function showProducto(Producto $producto){
+        return view('productosdash.producto', [
+            'producto' => $producto
+        ]);
+
     }
 
 
