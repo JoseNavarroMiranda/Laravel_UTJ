@@ -35,7 +35,7 @@ Route::get('registrar/cliente', [App\Http\Controllers\ClienteController::class, 
 Route::get('dashboard/producto', [App\Http\Controllers\ProductoController::class, 'showProducto'])->name('productosdash.produco');
 
 
-
+//Rutas de vistas que son necesarias middleware/autenticacion de por medio 
 Route::middleware('auth:clientes')->group(function () {
     Route::post('logout/cliente', [App\Http\Controllers\ClienteController::class, 'logout'])->name('cliente.logout');
 });
