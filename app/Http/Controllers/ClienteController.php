@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -144,7 +145,13 @@ class ClienteController extends Controller
     }
     
     public function dashboardclient(){
-        return view ('dashboardecommerce.index');
+        $productos = Producto::query()
+            ->select('id', 'nombre_producto', 'descripcion', 'precio', 'stock', 'estado_producto', 'imagen_producto', 'video_producto')
+            ->orderBy('estado_producto')
+            ->orderBy('nombre_producto')
+            ->get();
+
+        return view ('dashboardecommerce.index', compact('productos'));
     }
     
     public function Login(Request $request){
@@ -181,5 +188,4 @@ class ClienteController extends Controller
 
 
 }
-
 

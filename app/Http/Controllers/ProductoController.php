@@ -113,7 +113,7 @@ class ProductoController extends Controller
         $Producto->categoria_id = $request->input('categoria_id');
         $Producto->proveedor_id = $request->input('proveedor_id');
         $Producto->save();
-        return redirect()->route('producto.edit', $id)->with('success', 'se ah actualiza el producto de manera correcta');
+        return redirect()->route('producto.create', $id)->with('success', 'se ah actualiza el producto de manera correcta');
     }
     
     }
