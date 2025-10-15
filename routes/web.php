@@ -25,7 +25,9 @@ Route::resource('pedido', App\Http\Controllers\PedidoController::class);
 #se agrega la ruta de recursos para el controldor de creacion de detalles de ventas
 Route::resource('pedido_detalle', App\Http\Controllers\PedidoDetalleController::class);
 #Vista para imprimir archivos pdf 
-Route::get('imprimir', [App\Http\Controllers\GeneradorController::class, 'printproveedor'])->name('plantillapdf.proveedorpdf');
+Route::get('imprimir/proveedores', [App\Http\Controllers\GeneradorController::class, 'printproveedor'])->name('plantillapdf.proveedorpdf');
+Route::get('imprimir/clientes', [App\Http\Controllers\GeneradorController::class, 'printcliente'])->name('plantillapdf.clientepdf');
+
 
 
 

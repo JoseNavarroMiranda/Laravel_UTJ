@@ -18,10 +18,9 @@
             <hr>
             <br>
             <p class="text-end">
+                <a href="{{ route('plantillapdf.clientepdf') }}" class="btn btn-outline-secondary">Descargar informe</a>
                 <a href="{{ route('cliente.create') }}" class="btn btn-success">Registrar Cliente</a>
-                <a href="{{ route('home') }}" class="btn btn-primary">
-                    Regresar
-                </a>
+                <a href="{{ route('home') }}" class="btn btn-primary">Regresar</a>
             </p>
             <table id="clientes-table" class="table table-striped table-bordered" style="width:100%">
                 <thead>
