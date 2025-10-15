@@ -18,6 +18,7 @@
             <hr>
             <br>
             <p class="text-end">
+                <a href="{{ route('plantillapdf.proveedorpdf') }}" class="btn btn-outline-secondary">Descargar informe</a>
                 <a href="{{ route('proveedor.create') }}" class="btn btn-success">Registrar Proveedor</a>
                 <a href="{{ route('home') }}" class="btn btn-primary">Regresar</a>
             </p>
