@@ -39,6 +39,9 @@ Route::get('registrar/cliente', [App\Http\Controllers\ClienteController::class, 
 
 //Ruta para vista de carrito y detalle 
 Route::get('/carrito', [App\Http\Controllers\CartController::class, 'showcart'])->name('carrito.detalle');
+Route::post('/carrito/agregar', [App\Http\Controllers\CartController::class, 'addacart'])->name('carrito.agregar');
+Route::put('/carrito/items/{item}', [App\Http\Controllers\CartController::class, 'update'])->name('carrito.actualizar');
+Route::delete('/carrito/items/{item}', [App\Http\Controllers\CartController::class, 'destroy'])->name('carrito.eliminar');
 
 
 //Rutas para vistas de productos

@@ -7,27 +7,39 @@
     @includeIf('vistasbase.navbar')
 
     @php
-        $items = $cartItems ?? session('cart.items', []);
-        $items = is_array($items) ? $items : ($items instanceof \Illuminate\Support\Collection ? $items->all() : []);
-        $total = 0;
+        $carrito = $carrito ?? null;
+        $items = collect($cartItems ?? []);
+        $total = $carrito->total ?? $items->sum(function ($item) {
+            return $item['subtotal'] ?? (($item['cantidad'] ?? 0) * ($item['precio'] ?? 0));
+        });
+        $totalItems = $carrito->total_items ?? $items->sum(function ($item) {
+            return $item['cantidad'] ?? 0;
+        });
     @endphp
 
     <section class="cart-shell">
         <div class="cart-layout">
             <div class="cart-items card">
                 <div class="card-body">
-                    <h2 class="cart-title">Productos añadidos</h2>
+                    <h2 class="cart-title">Productos anadidos</h2>
 
-                    @if(empty($items))
-                        <p class="cart-empty">Tu carrito todavía está vacío. Añade productos desde el catálogo para verlos aquí.</p>
+                    @if(session('status'))
+                        <div class="cart-alert success">{{ session('status') }}</div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="cart-alert error">{{ $errors->first() }}</div>
+                    @endif
+
+                    @if($items->isEmpty())
+                        <p class="cart-empty">Tu carrito todavia esta vacio. Anade productos desde el catalogo para verlos aqui.</p>
                     @else
                         <ul class="cart-list">
                             @foreach($items as $item)
                                 @php
                                     $cantidad = (int)($item['cantidad'] ?? 1);
                                     $precio = (float)($item['precio'] ?? 0);
-                                    $subtotal = $cantidad * $precio;
-                                    $total += $subtotal;
+                                    $subtotal = (float)($item['subtotal'] ?? $cantidad * $precio);
                                 @endphp
                                 <li class="cart-list-item">
                                     <div class="cart-item-media">
@@ -39,24 +51,29 @@
                                     </div>
                                     <div class="cart-item-info">
                                         <h3 class="cart-item-name">{{ $item['nombre'] ?? 'Producto sin nombre' }}</h3>
-                                        <p class="cart-item-description">{{ $item['descripcion'] ?? 'Sin descripción disponible.' }}</p>
+                                        <p class="cart-item-description">{{ $item['descripcion'] ?? 'Sin descripcion disponible.' }}</p>
                                         <div class="cart-item-meta">
-                                            <span class="cart-item-quantity">Cantidad: {{ $cantidad }}</span>
                                             <span class="cart-item-price">Precio unitario: ${{ number_format($precio, 2) }}</span>
                                             <span class="cart-item-subtotal">Subtotal: ${{ number_format($subtotal, 2) }}</span>
                                         </div>
                                         @if(!empty($item['id']))
                                             <div class="cart-item-actions">
                                                 @if(Route::has('carrito.actualizar'))
-                                                    <form method="POST" action="{{ route('carrito.actualizar', $item['id']) }}" class="cart-item-action" hidden>
+                                                    <form method="POST" action="{{ route('carrito.actualizar', $item['id']) }}" class="cart-item-update">
                                                         @csrf
                                                         @method('PUT')
+                                                        <label class="cart-item-quantity-label">
+                                                            <span>Cantidad</span>
+                                                            <input type="number" name="cantidad" min="1" value="{{ $cantidad }}" class="cart-item-quantity-input">
+                                                        </label>
+                                                        <button type="submit" class="btn secondary cart-item-update-submit">Actualizar</button>
                                                     </form>
                                                 @endif
                                                 @if(Route::has('carrito.eliminar'))
-                                                    <form method="POST" action="{{ route('carrito.eliminar', $item['id']) }}" class="cart-item-action" hidden>
+                                                    <form method="POST" action="{{ route('carrito.eliminar', $item['id']) }}" class="cart-item-remove">
                                                         @csrf
                                                         @method('DELETE')
+                                                        <button type="submit" class="btn danger cart-item-remove-submit">Eliminar</button>
                                                     </form>
                                                 @endif
                                             </div>
@@ -75,7 +92,11 @@
                     <dl class="cart-summary-list">
                         <div class="cart-summary-row">
                             <dt>Productos</dt>
-                            <dd>{{ empty($items) ? 0 : count($items) }}</dd>
+                            <dd>{{ $items->count() }}</dd>
+                        </div>
+                        <div class="cart-summary-row">
+                            <dt>Unidades</dt>
+                            <dd>{{ $totalItems }}</dd>
                         </div>
                         <div class="cart-summary-row">
                             <dt>Total</dt>
@@ -115,6 +136,25 @@
             margin: 0 0 16px;
             font-size: 24px;
             font-weight: 600;
+        }
+
+        .cart-alert {
+            margin: 0 0 16px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .cart-alert.success {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            color: #bbf7d0;
+        }
+
+        .cart-alert.error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fecaca;
         }
 
         .cart-empty {
@@ -201,7 +241,65 @@
 
         .cart-item-actions {
             display: flex;
-            gap: 8px;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .cart-item-update,
+        .cart-item-remove {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cart-item-update {
+            flex-wrap: wrap;
+        }
+
+        .cart-item-quantity-label {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .cart-item-quantity-input {
+            width: 96px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--panel-border);
+            background: #0b1220;
+            color: var(--text);
+            outline: none;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+
+        .cart-item-quantity-input:focus {
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px var(--ring);
+        }
+
+        .cart-item-update-submit,
+        .cart-item-remove-submit {
+            padding: 10px 14px;
+        }
+
+        .btn.danger,
+        .cart-item-remove-submit {
+            background: var(--danger);
+            color: #0b1220;
+        }
+
+        .btn.danger:hover,
+        .cart-item-remove-submit:hover {
+            filter: brightness(1.08);
+        }
+
+        .btn.danger:active,
+        .cart-item-remove-submit:active {
+            transform: translateY(1px);
         }
 
         .cart-summary-title {

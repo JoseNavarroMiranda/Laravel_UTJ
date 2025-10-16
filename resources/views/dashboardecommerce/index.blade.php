@@ -36,7 +36,12 @@
                                 </div>
                                 <div class="producto-actions mt-auto">
                                     <a href="{{ route('producto.show', $producto->id) }}" class="btn btn-primary btn-sm">Abrir producto</a>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm">Añadir</button>
+                                    <form method="POST" action="{{ route('carrito.agregar') }}" class="producto-add-form">
+                                        @csrf
+                                        <input type="hidden" name="producto_id" value="{{ $producto->id }}">
+                                        <input type="hidden" name="cantidad" value="1">
+                                        <button type="submit" class="btn btn-outline-secondary btn-sm">Anadir</button>
+                                    </form>
                                 </div>
                             </div>
                         </article>
@@ -138,6 +143,11 @@
         .producto-actions {
             display: flex;
             gap: 8px;
+        }
+
+        .producto-add-form {
+            display: inline-block;
+            margin: 0;
         }
 
         @media (max-width: 576px) {
