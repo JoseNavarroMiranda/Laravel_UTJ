@@ -14,7 +14,7 @@ class CartController extends Controller
 
     public function showcart()
     {
-
+        return view("carrito.detallecarrito");
     }
 
 }

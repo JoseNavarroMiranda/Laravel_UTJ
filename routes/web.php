@@ -37,6 +37,10 @@ Route::post('login/cliente', [App\Http\Controllers\ClienteController::class, 'Lo
 Route::get('dashboard/', [App\Http\Controllers\ClienteController::class, 'dashboardclient'])->name('dashboardecommerce.index');
 Route::get('registrar/cliente', [App\Http\Controllers\ClienteController::class, 'registerCliente'])->name('cliente.register');
 
+//Ruta para vista de carrito y detalle 
+Route::get('/carrito', [App\Http\Controllers\CartController::class, 'showcart'])->name('carrito.detalle');
+
+
 //Rutas para vistas de productos
 Route::get('dashboard/producto', [App\Http\Controllers\ProductoController::class, 'showProducto'])->name('productosdash.produco');
 
