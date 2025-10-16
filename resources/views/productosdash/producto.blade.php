@@ -29,7 +29,7 @@
                                     'tipo' => $esImagenAnimada ? 'imagen' : 'video',
                                     'src' => $videoRuta,
                                     'alt' => $producto->nombre_producto . ' - ' . ($esImagenAnimada ? 'animacion' : 'video'),
-                                    'duracion' => $esImagenAnimada ? 5000 : null,
+                                    'duracion' => $esImagenAnimada ? 100 : null,
                                 ]);
                             }
                         @endphp
