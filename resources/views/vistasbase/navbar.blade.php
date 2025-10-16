@@ -5,6 +5,13 @@
         </div>
         <div class="vb-flex-spacer"></div>
         <div class="vb-auth">
+            <a class="vb-cart-link" href="{{ url('/carrito') }}" aria-label="Ver carrito">
+                <svg class="vb-cart-icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+                    <path d="M3 3h2l1.55 10.1a2 2 0 0 0 2 1.75h8.22a2 2 0 0 0 2-1.6l1.19-6.6H6.38" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
+                    <circle cx="10.5" cy="19.5" r="1.4" fill="currentColor"/>
+                    <circle cx="17.5" cy="19.5" r="1.4" fill="currentColor"/>
+                </svg>
+            </a>
             @php($clienteNombreSesion = session('cliente_nombre'))
             @php($clienteActual = Auth::guard('clientes')->user())
             @if($clienteActual)
@@ -52,6 +59,20 @@
         .vb-auth strong { color: #fff; }
         .vb-login-link{ color: #fff; font-weight:600; text-decoration:none; padding:8px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); transition: background .15s ease, color .15s ease; }
         .vb-login-link:hover{ background: rgba(255,255,255,0.1); color:#fff; }
+        .vb-cart-link{
+            display:inline-flex; align-items:center; justify-content:center;
+            width:40px; height:40px;
+            border-radius:12px;
+            border:1px solid rgba(255,255,255,0.18);
+            color:#fff;
+            transition: background .15s ease, border-color .15s ease, transform .15s ease;
+        }
+        .vb-cart-link:hover{
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+        .vb-cart-icon{ width:22px; height:22px; }
         .vb-user-menu{ position:relative; display:inline-block; color:#ccc; }
         .vb-user-menu > summary{ list-style:none; display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; cursor:pointer; transition: background .15s ease; }
         .vb-user-menu > summary::-webkit-details-marker{ display:none; }
@@ -69,5 +90,4 @@
         .vb-user-menu-logout:active{ transform:translateY(1px); }
     </style>
 </nav>
-
 
