@@ -47,6 +47,9 @@ Route::delete('/carrito/items/{item}', [App\Http\Controllers\CartController::cla
 //Rutas para vistas de productos
 Route::get('dashboard/producto', [App\Http\Controllers\ProductoController::class, 'showProducto'])->name('productosdash.produco');
 
+//Ruta para envio de correos
+Route::get('/correo-prueba', [App\Http\Controllers\CorreoController::class, 'enviarPrueba']);
+
 
 //Rutas de vistas que son necesarias middleware/autenticacion de por medio 
 Route::middleware('auth:clientes')->group(function () {
