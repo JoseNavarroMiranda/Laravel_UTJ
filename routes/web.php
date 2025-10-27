@@ -21,6 +21,7 @@ Route::resource('categoria', App\Http\Controllers\CategoriaController::class);
 Route::delete('categoria/{categoria}/eliminar', [App\Http\Controllers\CategoriaController::class, 'deteleCategoria'])->name('categoria.delete');
 #Se agrega la ruta de recursos para el controldor de creacion de productos
 Route::resource('producto', App\Http\Controllers\ProductoController::class);
+Route::delete('producto/{producto}/eliminar', [App\Http\Controllers\ProductoController::class, 'deleteProducto'])->name('producto.delete');
 #se agrega la ruta de recursos para el controldor de creacion de ventas
 Route::resource('pedido', App\Http\Controllers\PedidoController::class);
 #se agrega la ruta de recursos para el controldor de creacion de detalles de ventas

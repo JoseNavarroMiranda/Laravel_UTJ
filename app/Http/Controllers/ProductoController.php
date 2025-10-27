@@ -12,7 +12,23 @@ class ProductoController extends Controller
      */
     public function index()
     {
+        $productos = Producto::activos()
+            ->select(
+                'id',
+                'nombre_producto',
+                'descripcion',
+                'precio',
+                'stock',
+                'imagen_producto',
+                'video_producto',
+                'estado_producto',
+                'categoria_id',
+                'proveedor_id'
+            )
+            ->orderBy('nombre_producto')
+            ->get();
 
+        return view('producto.index', compact('productos'));
     }
 
     /**
@@ -120,12 +136,46 @@ class ProductoController extends Controller
     
     }
 
+    private function cargarDT(){
+
+        $dataTable = [];
+        foreach ($data as $item) {
+            $acciones = '<a href="' . route('producto.edit', $item->id) . '" class="btn btn-primary btn-sm">Editar</a>';
+            $dataTable[] = [
+                'id' => $item->id,
+                'nomnombre_productobre' => $item->nombre_producto,
+                'descripcion' => $item->descripcion,
+                'precio' => $item->precio,
+                'stock' => $item->stock,
+                'estado_producto' => $item->estado_producto,
+                'imagen_producto' => $item->imagen_producto,
+                'video_producto' => $item->video_producto,
+                'categoria_id' => $item->categoria_id,
+                'proveedor_id' => $item->proveedor_id,
+                'acciones' => $acciones,
+            ];
+        }
+        return $dataTable;
+
+    }
+
+
+
+
+
+
+
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function deleteProducto(string $id)
     {
-        //
+        $producto = Producto::findorFail($id);
+        $producto->delete();
+        return redirect()->route('producto.index')->with('success', 'Producto eliminado exitosamente.');
+
+
     }
 
 
