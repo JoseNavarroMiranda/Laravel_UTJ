@@ -7,6 +7,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::pattern('cliente', '[0-9]+');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 #Se agrega la ruta de recursos para el controldor de creacion de clientes
@@ -34,6 +35,14 @@ Route::get('imprimir/clientes', [App\Http\Controllers\GeneradorController::class
 // Ruta para mostrar la vista de login y registro de clientes
 Route::get('login/cliente', [App\Http\Controllers\ClienteController::class, 'loginCliente'])->name('cliente.login');
 Route::post('login/cliente', [App\Http\Controllers\ClienteController::class, 'Login'])->name('cliente.login.post');
+Route::get('cliente/forgot-password', [App\Http\Controllers\ClienteAuth\ClientePasswordResetLinkController::class, 'create'])
+    ->name('cliente.password.request');
+Route::post('cliente/forgot-password', [App\Http\Controllers\ClienteAuth\ClientePasswordResetLinkController::class, 'store'])
+    ->name('cliente.password.email');
+Route::get('cliente/reset-password/{token}', [App\Http\Controllers\ClienteAuth\ClienteNewPasswordController::class, 'create'])
+    ->name('cliente.password.reset');
+Route::post('cliente/reset-password', [App\Http\Controllers\ClienteAuth\ClienteNewPasswordController::class, 'store'])
+    ->name('cliente.password.update');
 Route::get('dashboard/', [App\Http\Controllers\ClienteController::class, 'dashboardclient'])->name('dashboardecommerce.index');
 Route::get('registrar/cliente', [App\Http\Controllers\ClienteController::class, 'registerCliente'])->name('cliente.register');
 

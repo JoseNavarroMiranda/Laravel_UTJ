@@ -4,6 +4,11 @@
 @section('content')
     <div class="card card-auth">
         <div class="card-body">
+            @if (session('status'))
+                <div class="success" style="margin-bottom:12px;">
+                    {{ session('status') }}
+                </div>
+            @endif
             @if ($errors->any())
                 <div class="error" style="margin-bottom:12px;">
                     @foreach ($errors->all() as $error)
@@ -28,6 +33,11 @@
 
                 <div class="spacer"></div>
                 <button class="btn block" type="submit">Entrar</button>
+
+                <div class="spacer"></div>
+                <div class="muted" style="text-align:center;">
+                    <a href="{{ route('cliente.password.request') }}">Olvidé mi contraseña</a>
+                </div>
 
                 <div class="spacer"></div>
                 <div class="muted" style="text-align:center;">
