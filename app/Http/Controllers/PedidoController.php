@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use \App\Models\Pedido;
+use App\Models\Cliente;
+use App\Models\Pedido;
 
 class PedidoController extends Controller
 {
@@ -12,7 +13,15 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        //
+        $pedidos = Pedido::with('cliente')
+            ->withCount('detalles')
+            ->orderByDesc('fecha_pedido')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('pedido.index', [
+            'pedidos' => $this->cargarDT($pedidos),
+        ]);
     }
 
     /**
@@ -20,7 +29,13 @@ class PedidoController extends Controller
      */
     public function create()
     {
-        return view('pedido.create');
+        $clientes = Cliente::select('id', 'nombre', 'email')
+            ->orderBy('nombre')
+            ->get();
+
+        return view('pedido.create', [
+            'clientes' => $clientes,
+        ]);
     }
 
     /**
@@ -28,20 +43,16 @@ class PedidoController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $payload = $request->validate([
             'fecha_pedido' => 'required|date',
             'estado_pedido' => 'required|string',
             'metodo_pago' => 'required|string',
             'total' => 'required|numeric',
             'cliente_id' => 'required|exists:clientes,id',
         ]);
-        $Pediod = new Pedido();
-        $Pediod->fecha_pedido = $request->fecha_pedido;
-        $Pediod->estado_pedido = $request->estado_pedido;
-        $Pediod->metodo_pago = $request->metodo_pago;
-        $Pediod->total = $request->total;
-        $Pediod->cliente_id = $request->cliente_id;
-        $Pediod->save();
+
+        Pedido::create($payload);
+
         return redirect()->route('pedido.create')->with('success', 'Pedido creado exitosamente');
     }
 
@@ -58,10 +69,15 @@ class PedidoController extends Controller
      */
     public function edit(string $id)
     {
-        $pedido = Pedido::findorFail($id);
-        return view('pedido.edit', array(
-            'pedido' => $pedido
-        ));
+        $pedido = Pedido::with('cliente')->findOrFail($id);
+        $clientes = Cliente::select('id', 'nombre', 'email')
+            ->orderBy('nombre')
+            ->get();
+
+        return view('pedido.edit', [
+            'pedido' => $pedido,
+            'clientes' => $clientes,
+        ]);
     }
 
     /**
@@ -69,20 +85,17 @@ class PedidoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $this->validate ($request, [
+        $payload = $this->validate($request, [
             'fecha_pedido' => 'required|date',
             'estado_pedido' => 'required|string',
             'metodo_pago' => 'required|string',
             'total' => 'required|numeric',
             'cliente_id' => 'required|exists:clientes,id',
         ]);
-        $pedido = Pedido::findorFail($id);
-        $pedido->fecha_pedido = $request->input('fecha_pedido');
-        $pedido->estado_pedido = $request->input('estado_pedido');
-        $pedido->metodo_pago = $request->input('metodo_pago');
-        $pedido->total = $request->input('total');
-        $pedido->cliente_id = $request->input('cliente_id');
-        $pedido->save();
+
+        $pedido = Pedido::findOrFail($id);
+        $pedido->update($payload);
+
         return redirect()->route('pedido.edit', $id)->with('success', 'Pedido actualizado exitosamente.');
     }
 
@@ -92,5 +105,42 @@ class PedidoController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function deletePedido(string $id)
+    {
+        $pedido = Pedido::findOrFail($id);
+        $pedido->delete();
+
+        return redirect()->route('pedido.index')->with('success', 'Pedido eliminado exitosamente.');
+    }
+
+    private function cargarDT($data)
+    {
+        $dataTable = [];
+
+        foreach ($data as $item) {
+            $editUrl = route('pedido.edit', $item->id);
+            $deleteUrl = route('pedido.delete', ['pedido' => $item->id]);
+
+            $acciones = '<a href="' . $editUrl . '" class="btn btn-primary btn-sm me-1">Editar</a>';
+            $acciones .= '<button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#pedidoConfirmDelete" data-pedido-id="' . $item->id . '" data-pedido-delete="' . $deleteUrl . '" data-pedido-label="' . e(optional($item->cliente)->nombre ?? 'Invitado') . '">Eliminar</button>';
+
+            $fecha = optional($item->fecha_pedido)->format('Y-m-d');
+            $total = number_format((float) ($item->total ?? 0), 2, '.', '');
+
+            $dataTable[] = [
+                'acciones' => $acciones,
+                'id' => $item->id,
+                'fecha' => $fecha,
+                'estado' => $item->estado_pedido,
+                'metodo_pago' => $item->metodo_pago,
+                'total' => $total,
+                'cliente' => optional($item->cliente)->nombre ?? 'Invitado',
+                'detalles' => $item->detalles_count ?? 0,
+            ];
+        }
+
+        return $dataTable;
     }
 }

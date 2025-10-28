@@ -24,8 +24,10 @@ Route::resource('producto', App\Http\Controllers\ProductoController::class);
 Route::delete('producto/{producto}/eliminar', [App\Http\Controllers\ProductoController::class, 'deleteProducto'])->name('producto.delete');
 #se agrega la ruta de recursos para el controldor de creacion de ventas
 Route::resource('pedido', App\Http\Controllers\PedidoController::class);
+Route::delete('pedido/{pedido}/eliminar', [App\Http\Controllers\PedidoController::class, 'deletePedido'])->name('pedido.delete');
 #se agrega la ruta de recursos para el controldor de creacion de detalles de ventas
 Route::resource('pedido_detalle', App\Http\Controllers\PedidoDetalleController::class);
+Route::delete('pedido_detalle/{pedido_detalle}/eliminar', [App\Http\Controllers\PedidoDetalleController::class, 'deletePedidoDetalle'])->name('pedido_detalle.delete');
 #Vista para imprimir archivos pdf 
 Route::get('imprimir/proveedores', [App\Http\Controllers\GeneradorController::class, 'printproveedor'])->name('plantillapdf.proveedorpdf');
 Route::get('imprimir/clientes', [App\Http\Controllers\GeneradorController::class, 'printcliente'])->name('plantillapdf.clientepdf');
@@ -64,4 +66,5 @@ Route::get('/correo-prueba', [App\Http\Controllers\CorreoController::class, 'env
 //Rutas de vistas que son necesarias middleware/autenticacion de por medio 
 Route::middleware('auth:clientes')->group(function () {
     Route::post('logout/cliente', [App\Http\Controllers\ClienteController::class, 'logout'])->name('cliente.logout');
+    Route::post('/carrito/checkout', [App\Http\Controllers\CartController::class, 'checkout'])->name('carrito.checkout');
 });

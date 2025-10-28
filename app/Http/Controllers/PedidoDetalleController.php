@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pedido;
 use App\Models\Pedido_Detalle;
+use App\Models\Producto;
 
 class PedidoDetalleController extends Controller
 {
@@ -12,7 +14,14 @@ class PedidoDetalleController extends Controller
      */
     public function index()
     {
-        //
+        $detalles = Pedido_Detalle::with(['pedido.cliente', 'producto'])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('pedido_detalle.index', [
+            'detalles' => $this->cargarDT($detalles),
+        ]);
     }
 
     /**
@@ -20,7 +29,17 @@ class PedidoDetalleController extends Controller
      */
     public function create()
     {
-        return view('pedido_detalle.create');
+        $pedidos = Pedido::select('id', 'fecha_pedido')
+            ->orderByDesc('fecha_pedido')
+            ->get();
+        $productos = Producto::select('id', 'nombre_producto')
+            ->orderBy('nombre_producto')
+            ->get();
+
+        return view('pedido_detalle.create', [
+            'pedidos' => $pedidos,
+            'productos' => $productos,
+        ]);
     }
 
     /**
@@ -28,7 +47,7 @@ class PedidoDetalleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $payload = $request->validate([
             'cantidad' => 'required|integer',
             'precio_unitario' => 'required|numeric',
             'subtotal' => 'required|numeric',
@@ -36,13 +55,8 @@ class PedidoDetalleController extends Controller
             'producto_id' => 'required|exists:productos,id',
         ]);
         // logica para guardar el detalle del pedido en la base de datos
-        $PedidoDetalle = new Pedido_Detalle();
-        $PedidoDetalle->cantidad = $request->cantidad;
-        $PedidoDetalle->precio_unitario = $request->precio_unitario;
-        $PedidoDetalle->subtotal = $request->subtotal;
-        $PedidoDetalle->pedido_id = $request->pedido_id;
-        $PedidoDetalle->producto_id = $request->producto_id;
-        $PedidoDetalle->save();
+        Pedido_Detalle::create($payload);
+
         return redirect()->route('pedido_detalle.create')->with('success', 'Detalle del pedido creado exitosamente');
     }
 
@@ -59,10 +73,19 @@ class PedidoDetalleController extends Controller
      */
     public function edit(string $id)
     {
-        $PedidoDetalle = Pedido_Detalle::findOrFail($id);
-        return view('pedido_detalle.edit', array(
-            'pedido_detalle' => $PedidoDetalle
-        ));
+        $pedidoDetalle = Pedido_Detalle::with(['pedido', 'producto'])->findOrFail($id);
+        $pedidos = Pedido::select('id', 'fecha_pedido')
+            ->orderByDesc('fecha_pedido')
+            ->get();
+        $productos = Producto::select('id', 'nombre_producto')
+            ->orderBy('nombre_producto')
+            ->get();
+
+        return view('pedido_detalle.edit', [
+            'pedido_detalle' => $pedidoDetalle,
+            'pedidos' => $pedidos,
+            'productos' => $productos,
+        ]);
     }
 
     /**
@@ -71,20 +94,16 @@ class PedidoDetalleController extends Controller
     public function update(Request $request, string $id)
     {
         //
-        $this->validate($request, [
+        $payload = $this->validate($request, [
             'cantidad' => 'required|integer',
             'precio_unitario' => 'required|numeric',
             'subtotal' => 'required|numeric',
             'pedido_id' => 'required|exists:pedidos,id',
             'producto_id' => 'required|exists:productos,id',
         ]);
-        $PedidoDetalle = Pedido_Detalle::findOrFail($id);
-        $PedidoDetalle->cantidad = $request->input('cantidad');
-        $PedidoDetalle->precio_unitario = $request->input('precio_unitario');
-        $PedidoDetalle->subtotal = $request->input('subtotal');
-        $PedidoDetalle->pedido_id = $request->input('pedido_id');
-        $PedidoDetalle->producto_id = $request->input('producto_id');
-        $PedidoDetalle->save();
+        $pedidoDetalle = Pedido_Detalle::findOrFail($id);
+        $pedidoDetalle->update($payload);
+
         return redirect()->route('pedido_detalle.edit', $id)->with('success', 'Detalle del pedido actualizado exitosamente.');
     }
 
@@ -94,5 +113,39 @@ class PedidoDetalleController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function deletePedidoDetalle(string $id)
+    {
+        $pedidoDetalle = Pedido_Detalle::findOrFail($id);
+        $pedidoDetalle->delete();
+
+        return redirect()->route('pedido_detalle.index')->with('success', 'Detalle del pedido eliminado exitosamente.');
+    }
+
+    private function cargarDT($data)
+    {
+        $dataTable = [];
+
+        foreach ($data as $item) {
+            $editUrl = route('pedido_detalle.edit', $item->id);
+            $deleteUrl = route('pedido_detalle.delete', ['pedido_detalle' => $item->id]);
+
+            $acciones = '<a href="' . $editUrl . '" class="btn btn-primary btn-sm me-1">Editar</a>';
+            $acciones .= '<button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#pedidoDetalleConfirmDelete" data-pedido-detalle-id="' . $item->id . '" data-pedido-detalle-delete="' . $deleteUrl . '" data-pedido-detalle-label="Pedido #' . $item->pedido_id . '">Eliminar</button>';
+
+            $dataTable[] = [
+                'acciones' => $acciones,
+                'id' => $item->id,
+                'pedido' => $item->pedido_id,
+                'cliente' => optional(optional($item->pedido)->cliente)->nombre ?? 'Invitado',
+                'producto' => optional($item->producto)->nombre_producto ?? 'Producto',
+                'cantidad' => $item->cantidad,
+                'precio_unitario' => number_format((float) ($item->precio_unitario ?? 0), 2, '.', ''),
+                'subtotal' => number_format((float) ($item->subtotal ?? 0), 2, '.', ''),
+            ];
+        }
+
+        return $dataTable;
     }
 }

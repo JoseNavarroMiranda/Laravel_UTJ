@@ -4,6 +4,10 @@
     <div class="row">
         <div class="col-lg-7">
             <h2>Editar pedido</h2>
+            <p class="text-end">
+                <a href="{{ route('pedido.index') }}" class="btn btn-secondary">Regresar</a>
+                <a href="{{ route('pedido.create') }}" class="btn btn-success">Registrar pedido</a>
+            </p>
             <form action="{{ route('pedido.update', $pedido->id) }}" method="POST" class="mt-3">
                 @csrf
                 @method('PUT')
@@ -43,8 +47,19 @@
                     <input type="number" class="form-control" id="total" name="total" step="0.01" min="0" value="{{ old('total', $pedido->total) }}" required>
                 </div>
                 <div class="form-group">
-                    <label for="cliente_id">ID del cliente</label>
-                    <input type="number" class="form-control" id="cliente_id" name="cliente_id" min="1" value="{{ old('cliente_id', $pedido->cliente_id) }}" required>
+                    <label for="cliente_id">Cliente</label>
+                    @if(isset($clientes) && $clientes->isNotEmpty())
+                        <select class="form-control" id="cliente_id" name="cliente_id" required>
+                            <option value="">Selecciona un cliente</option>
+                            @foreach($clientes as $cliente)
+                                <option value="{{ $cliente->id }}" {{ (string) old('cliente_id', $pedido->cliente_id) === (string) $cliente->id ? 'selected' : '' }}>
+                                    {{ $cliente->nombre }} ({{ $cliente->email }})
+                                </option>
+                            @endforeach
+                        </select>
+                    @else
+                        <input type="number" class="form-control" id="cliente_id" name="cliente_id" min="1" value="{{ old('cliente_id', $pedido->cliente_id) }}" required>
+                    @endif
                 </div>
                 <button type="submit" class="btn btn-primary">Actualizar pedido</button>
             </form>

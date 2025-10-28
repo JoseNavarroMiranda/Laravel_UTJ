@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Carrito;
 use App\Models\CarritoItem;
+use App\Models\Pedido;
 use App\Models\Producto;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -146,6 +147,63 @@ class CartController extends Controller
         });
 
         return back()->with('status', 'Producto eliminado del carrito.');
+    }
+
+    public function checkout(Request $request): RedirectResponse
+    {
+        $cliente = Auth::guard('clientes')->user();
+
+        if (!$cliente) {
+            return redirect()
+                ->route('cliente.login')
+                ->withErrors(['autenticacion' => 'Debes iniciar sesión para confirmar tu pedido.']);
+        }
+
+        $payload = $request->validate([
+            'metodo_pago' => ['required', 'string', 'max:255'],
+        ]);
+
+        $cart = $this->resolveCart($request)->load('items');
+
+        if ($cart->items->isEmpty()) {
+            return back()->withErrors(['carrito' => 'Tu carrito está vacío.']);
+        }
+
+        $pedido = null;
+
+        DB::transaction(function () use ($cart, $cliente, $payload, &$pedido) {
+            $this->recalculateTotals($cart);
+            $cart->refresh()->load('items');
+
+            $pedido = Pedido::create([
+                'fecha_pedido' => now(),
+                'estado_pedido' => 'pendiente',
+                'metodo_pago' => $payload['metodo_pago'],
+                'total' => $cart->total,
+                'cliente_id' => $cliente->id,
+            ]);
+
+            foreach ($cart->items as $item) {
+                $pedido->detalles()->create([
+                    'producto_id' => $item->producto_id,
+                    'cantidad' => $item->cantidad,
+                    'precio_unitario' => $item->precio_unitario,
+                    'subtotal' => $item->subtotal,
+                ]);
+            }
+
+            $cart->items()->delete();
+
+            $cart->forceFill([
+                'estado' => 'cerrado',
+                'total_items' => 0,
+                'total' => 0,
+            ])->save();
+        });
+
+        return redirect()
+            ->route('carrito.detalle')
+            ->with('status', "Pedido #{$pedido->id} creado exitosamente.");
     }
 
     protected function resolveCart(Request $request): Carrito
