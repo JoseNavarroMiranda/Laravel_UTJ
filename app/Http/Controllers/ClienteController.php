@@ -147,6 +147,7 @@ class ClienteController extends Controller
     public function dashboardclient(){
         $productos = Producto::activos()
             ->select('id', 'nombre_producto', 'descripcion', 'precio', 'stock', 'estado_producto', 'imagen_producto', 'video_producto')
+            ->with('imagenes')
             ->orderBy('nombre_producto')
             ->get();
 

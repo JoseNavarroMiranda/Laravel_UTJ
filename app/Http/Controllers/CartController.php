@@ -17,17 +17,19 @@ class CartController extends Controller
     public function showcart(Request $request)
     {
         $cart = $this->resolveCart($request);
-        $cart->load('items.producto');
+        $cart->load('items.producto.imagenes');
 
         $items = $cart->items->map(function (CarritoItem $item) {
             $producto = $item->producto;
+            $imagenPrincipal = $producto->imagen_producto ?? optional($producto->imagenes->first())->ruta;
 
             return [
                 'id' => $item->id,
                 'producto_id' => $item->producto_id,
                 'nombre' => $producto->nombre_producto ?? 'Producto',
                 'descripcion' => $producto->descripcion ?? '',
-                'imagen' => $producto->imagen_producto ?? null,
+                'imagen' => $imagenPrincipal,
+                'galeria' => $producto->imagenes->pluck('ruta')->all(),
                 'precio' => (float) $item->precio_unitario,
                 'cantidad' => (int) $item->cantidad,
                 'subtotal' => (float) $item->subtotal,

@@ -13,8 +13,8 @@ class ProveedorController extends Controller
      */
     public function index()
     {
-        $provedor = Proveedor::activos()
-            ->select('id', 'nombre', 'domicilio', 'ciudad', 'cp', 'telefono', 'rfc', 'email', 'estado_proveedor')
+        $provedor = Proveedor::select('id', 'nombre', 'domicilio', 'ciudad', 'cp', 'telefono', 'rfc', 'email', 'estado_proveedor')
+            ->orderBy('nombre')
             ->get();
         return view('proveedors.index', ['provedors' => $this->cargarDT($provedor)]);  
 

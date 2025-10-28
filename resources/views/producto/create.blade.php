@@ -46,8 +46,9 @@
                <input type="text" class="form-control" id="proveedor_id" name="proveedor_id" placeholder="Selecciona el proveedor" value={{old('proveedor_id')}}>
             </div> 
             <div class="form-group">
-               <label for="imagen_producto">Imagen del producto</label>
-               <input type="file" class="form-control" id="imagen_producto" name="imagen_producto">
+               <label for="imagen_producto">Imágenes del producto</label>
+               <input type="file" class="form-control" id="imagen_producto" name="imagen_producto[]" multiple>
+               <small class="form-text text-muted">Selecciona una o más imágenes; la primera será la principal.</small>
             </div>
             <div class="form-group">
                <label for="video_producto">Video del producto</label>

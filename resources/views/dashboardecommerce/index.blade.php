@@ -14,8 +14,11 @@
                     @forelse(($productos ?? []) as $producto)
                         <article class="producto-card card shadow-sm h-100">
                             <div class="producto-imagen-wrapper">
-                                @if(!empty($producto->imagen_producto))
-                                    <img src="{{ asset('images/'.$producto->imagen_producto) }}"
+                                @php
+                                    $imagenPrincipal = $producto->imagen_producto ?? optional($producto->imagenes->first())->ruta;
+                                @endphp
+                                @if(!empty($imagenPrincipal))
+                                    <img src="{{ asset('images/'.$imagenPrincipal) }}"
                                          class="producto-imagen rounded-top"
                                          alt="{{ $producto->nombre_producto }}">
                                 @else

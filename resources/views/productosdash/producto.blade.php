@@ -12,15 +12,21 @@
                 <div class="col-lg-5">
                     <div class="producto-detalle-media h-100">
                         @php
-                            $slides = collect();
-                            if (!empty($producto->imagen_producto)) {
-                                $slides->push([
-                                    'tipo' => 'imagen',
-                                    'src' => asset('images/' . $producto->imagen_producto),
-                                    'alt' => $producto->nombre_producto . ' - imagen principal',
-                                    'duracion' => 5000,
-                                ]);
+                            $imagenes = $producto->imagenes->pluck('ruta')->filter()->unique()->values();
+
+                            if ($imagenes->isEmpty() && !empty($producto->imagen_producto)) {
+                                $imagenes->push($producto->imagen_producto);
                             }
+
+                            $slides = $imagenes->map(function ($ruta) use ($producto) {
+                                return [
+                                    'tipo' => 'imagen',
+                                    'src' => asset('images/' . $ruta),
+                                    'alt' => $producto->nombre_producto . ' - imagen',
+                                    'duracion' => 5000,
+                                ];
+                            });
+
                             if (!empty($producto->video_producto)) {
                                 $videoRuta = asset('videos/' . $producto->video_producto);
                                 $extension = strtolower(pathinfo($producto->video_producto, PATHINFO_EXTENSION));

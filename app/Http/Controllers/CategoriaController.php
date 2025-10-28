@@ -12,8 +12,8 @@ class CategoriaController extends Controller
      */
     public function index()
     {
-        $categoria = Categoria::activos()
-            ->select('id', 'nombre_categoria', 'descripcion', 'estado_categoria')
+        $categoria = Categoria::select('id', 'nombre_categoria', 'descripcion', 'estado_categoria')
+            ->orderBy('nombre_categoria')
             ->get();
         return view('categoria.index', ['categorias' => $this->cargarDT($categoria)]);
         

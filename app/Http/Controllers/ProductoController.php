@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use \App\Models\Producto;
+use App\Models\Producto;
+use Illuminate\Support\Facades\DB;
 
 class ProductoController extends Controller
 {
@@ -12,8 +13,7 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        $productos = Producto::activos()
-            ->select(
+        $productos = Producto::select(
                 'id',
                 'nombre_producto',
                 'descripcion',
@@ -25,10 +25,11 @@ class ProductoController extends Controller
                 'categoria_id',
                 'proveedor_id'
             )
+            ->with('imagenes')
             ->orderBy('nombre_producto')
             ->get();
 
-        return view('producto.index', compact('productos'));
+        return view('producto.index', ['productos' => $this->cargarDT($productos)]);
     }
 
     /**
@@ -44,36 +45,52 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nombre_producto' => 'required',
             'descripcion' => 'required',
             'precio' => 'required|numeric',
             'stock' => 'required|integer',
-            'imagen_producto' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'imagen_producto' => 'required|array|min:1',
+            'imagen_producto.*' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'video_producto' => 'required|file|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/webm',
             'categoria_id' => 'required',
             'proveedor_id' => 'required',
         ]);
-        // logica para guardar el producto en la base de datos
-        $Producto = new Producto();
-        $Producto->nombre_producto = $request->nombre_producto;
-        $Producto->descripcion = $request->descripcion;
-        $Producto->precio = $request->precio;
-        $Producto->stock = $request->stock;
-        if ($request->hasFile('imagen_producto')) {
-            $imageName = time().'.'.$request->imagen_producto->extension();  
-            $request->imagen_producto->move(public_path('images'), $imageName);
-            $Producto->imagen_producto = $imageName;
-        }
-        if ($request->hasFile('video_producto')) {
-            $videoName = time().'.'.$request->video_producto->extension();  
-            $request->video_producto->move(public_path('videos'), $videoName);
-            $Producto->video_producto = $videoName;
-        }
-        $Producto->categoria_id = $request->categoria_id;
-        $Producto->proveedor_id = $request->proveedor_id;
-        $Producto->save();
-        return redirect()->route('producto.create')->with('success', 'Producto creado exitosamente');
+
+        DB::transaction(function () use ($request, $validated) {
+            $producto = new Producto();
+            $producto->nombre_producto = $validated['nombre_producto'];
+            $producto->descripcion = $validated['descripcion'];
+            $producto->precio = $validated['precio'];
+            $producto->stock = $validated['stock'];
+            $producto->categoria_id = $validated['categoria_id'];
+            $producto->proveedor_id = $validated['proveedor_id'];
+
+            $imagenesArchivos = collect($request->file('imagen_producto', []))->filter()->values();
+            $principalRuta = null;
+
+            if ($imagenesArchivos->isNotEmpty()) {
+                $principalRuta = $this->guardarArchivo($imagenesArchivos->shift(), 'images');
+                $producto->imagen_producto = $principalRuta;
+            }
+
+            if ($request->hasFile('video_producto')) {
+                $videoFile = $request->file('video_producto');
+                $producto->video_producto = $this->guardarArchivo($videoFile, 'videos');
+            }
+
+            $producto->save();
+
+            if ($principalRuta) {
+                $producto->imagenes()->create(['ruta' => $principalRuta]);
+            }
+
+            if ($imagenesArchivos->isNotEmpty()) {
+                $this->agregarImagenes($producto, $imagenesArchivos->all());
+            }
+        });
+
+        return redirect()->route('producto.index')->with('success', 'Producto creado exitosamente');
     }
 
     /**
@@ -81,6 +98,8 @@ class ProductoController extends Controller
      */
     public function show(Producto $producto)
     {
+        $producto->loadMissing('imagenes');
+
         return view('productosdash.producto', [
             'producto' => $producto,
         ]);
@@ -91,10 +110,11 @@ class ProductoController extends Controller
      */
     public function edit(string $id)
     {
-        $Producto = Producto::findorFail($id);
-        return view('producto.edit',  array(
-            'Producto' => $Producto
-        ));
+        $producto = Producto::with('imagenes')->findOrFail($id);
+
+        return view('producto.edit', [
+            'Producto' => $producto,
+        ]);
     }
 
     /**
@@ -102,53 +122,60 @@ class ProductoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $this->validate($request, [
+        $validated = $request->validate([
             'nombre_producto' => 'required',
             'descripcion' => 'required',
             'precio' => 'required|numeric',
             'stock' => 'required|integer',
             'estado_producto' => 'required',
-            'imagen_producto' => 'image|mimes:jpeg,png,jpg,gif,svg',
-            'video_producto' => 'file|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/webm',
+            'imagen_producto' => 'nullable|array',
+            'imagen_producto.*' => 'image|mimes:jpeg,png,jpg,gif,svg',
+            'video_producto' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/svg+xml,video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/webm',
             'categoria_id' => 'required',
             'proveedor_id' => 'required',
         ]);
-        $Producto = Producto::findorFail($id);
-        $Producto->nombre_producto = $request->input('nombre_producto');
-        $Producto->descripcion = $request->input('descripcion');
-        $Producto->precio = $request->input('precio');
-        $Producto->stock = $request->input('stock');
-        $Producto->estado_producto = $request->input('estado_producto');
-        if ($request->hasFile('imagen_producto')) {
-            $imageName = time().'.'.$request->imagen_producto->extension();  
-            $request->imagen_producto->move(public_path('images'), $imageName);
-            $Producto->imagen_producto = $imageName;
-        }
-        if ($request->hasFile('video_producto')) {
-            $videoName = time().'.'.$request->video_producto->extension();  
-            $request->video_producto->move(public_path('videos'), $videoName);
-            $Producto->video_producto = $videoName;
-        }
-        $Producto->categoria_id = $request->input('categoria_id');
-        $Producto->proveedor_id = $request->input('proveedor_id');
-        $Producto->save();
+
+        $producto = Producto::findOrFail($id);
+
+        DB::transaction(function () use ($producto, $request, $validated) {
+            $producto->nombre_producto = $validated['nombre_producto'];
+            $producto->descripcion = $validated['descripcion'];
+            $producto->precio = $validated['precio'];
+            $producto->stock = $validated['stock'];
+            $producto->estado_producto = $validated['estado_producto'];
+            $producto->categoria_id = $validated['categoria_id'];
+            $producto->proveedor_id = $validated['proveedor_id'];
+
+            if ($request->hasFile('video_producto')) {
+                $videoFile = $request->file('video_producto');
+                $producto->video_producto = $this->guardarArchivo($videoFile, 'videos');
+            }
+
+            $producto->save();
+
+            if ($request->hasFile('imagen_producto')) {
+                $this->agregarImagenes($producto, $request->file('imagen_producto', []), true);
+            }
+        });
+
         return redirect()->route('producto.create', $id)->with('success', 'se ah actualiza el producto de manera correcta');
-    
     }
 
-    private function cargarDT(){
-
+    private function cargarDT($data)
+    {
         $dataTable = [];
+
         foreach ($data as $item) {
             $acciones = '<a href="' . route('producto.edit', $item->id) . '" class="btn btn-primary btn-sm">Editar</a>';
             $dataTable[] = [
                 'id' => $item->id,
-                'nomnombre_productobre' => $item->nombre_producto,
+                'nombre_producto' => $item->nombre_producto,
                 'descripcion' => $item->descripcion,
                 'precio' => $item->precio,
                 'stock' => $item->stock,
                 'estado_producto' => $item->estado_producto,
                 'imagen_producto' => $item->imagen_producto,
+                'imagenes' => $item->imagenes->pluck('ruta')->all(),
                 'video_producto' => $item->video_producto,
                 'categoria_id' => $item->categoria_id,
                 'proveedor_id' => $item->proveedor_id,
@@ -156,7 +183,50 @@ class ProductoController extends Controller
             ];
         }
         return $dataTable;
+    }
 
+
+    private function agregarImagenes(Producto $producto, array $imagenes = [], bool $reemplazarPrincipal = false): void
+    {
+        $imagenesCollection = collect($imagenes)->filter();
+
+        if ($imagenesCollection->isEmpty()) {
+            return;
+        }
+
+        $imagenPrincipal = $imagenesCollection->shift();
+
+        if ($imagenPrincipal) {
+            $rutaPrincipal = $this->guardarArchivo($imagenPrincipal, 'images');
+
+            if ($reemplazarPrincipal || empty($producto->imagen_producto)) {
+                $producto->imagen_producto = $rutaPrincipal;
+                $producto->save();
+            }
+
+            $producto->imagenes()->create(['ruta' => $rutaPrincipal]);
+        }
+
+        $imagenesCollection->each(function ($imagen) use ($producto) {
+            $ruta = $this->guardarArchivo($imagen, 'images');
+            $producto->imagenes()->create(['ruta' => $ruta]);
+        });
+    }
+
+    private function guardarArchivo($archivo, string $directorio): string
+    {
+        $destino = public_path($directorio);
+
+        if (!is_dir($destino)) {
+            mkdir($destino, 0755, true);
+        }
+
+        $extension = strtolower($archivo->getClientOriginalExtension() ?: $archivo->extension());
+        $nombre = uniqid($directorio . '_', true) . '.' . $extension;
+
+        $archivo->move($destino, $nombre);
+
+        return $nombre;
     }
 
 
@@ -171,11 +241,10 @@ class ProductoController extends Controller
      */
     public function deleteProducto(string $id)
     {
-        $producto = Producto::findorFail($id);
+        $producto = Producto::findOrFail($id);
         $producto->delete();
+
         return redirect()->route('producto.index')->with('success', 'Producto eliminado exitosamente.');
-
-
     }
 
 
@@ -193,6 +262,8 @@ class ProductoController extends Controller
 
     #funcion para mostrar tarjeta de producto
     public function showProducto(Producto $producto){
+        $producto->loadMissing('imagenes');
+
         return view('productosdash.producto', [
             'producto' => $producto
         ]);

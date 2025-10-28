@@ -302,7 +302,7 @@ return [
         // Navbar items:
         [
             'type' => 'navbar-search',
-            'text' => 'search',
+            'text' => 'Buscar',
             'topnav_right' => true,
         ],
         [
@@ -313,84 +313,49 @@ return [
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => 'Buscar',
+        ],
+        ['header' => 'Administración'],
+        [
+            'text' => 'Clientes',
+            'route' => 'cliente.index',
+            'icon' => 'fas fa-fw fa-users',
         ],
         [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
+            'text' => 'Proveedores',
+            'route' => 'proveedor.index',
+            'icon' => 'fas fa-fw fa-truck',
         ],
         [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
+            'text' => 'Categorías',
+            'route' => 'categoria.index',
+            'icon' => 'fas fa-fw fa-tags',
         ],
         [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
+            'text' => 'Productos',
+            'route' => 'producto.index',
+            'icon' => 'fas fa-fw fa-boxes',
         ],
         [
-            'text' => 'multilevel',
-            'icon' => 'fas fa-fw fa-share',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-            ],
-        ],
-        ['header' => 'labels'],
-        [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
+            'text' => 'Pedidos',
+            'route' => 'pedido.index',
+            'icon' => 'fas fa-fw fa-shopping-cart',
         ],
         [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
+            'text' => 'Detalle de pedidos',
+            'route' => 'pedido_detalle.index',
+            'icon' => 'fas fa-fw fa-clipboard-list',
+        ],
+        ['header' => 'Ecommerce'],
+        [
+            'text' => 'Catálogo',
+            'route' => 'dashboardecommerce.index',
+            'icon' => 'fas fa-fw fa-store',
         ],
         [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
+            'text' => 'Carrito',
+            'route' => 'carrito.detalle',
+            'icon' => 'fas fa-fw fa-shopping-basket',
         ],
     ],
 

@@ -51,9 +51,18 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="imagen_producto">Imagen del producto</label>
-                    <input type="file" class="form-control" id="imagen_producto" name="imagen_producto">
-                    @if($Producto->imagen_producto)
+                    <label for="imagen_producto">Imágenes del producto</label>
+                    <input type="file" class="form-control" id="imagen_producto" name="imagen_producto[]" multiple>
+                    <small class="form-text text-muted">Puedes agregar una o más imágenes nuevas; la primera reemplazará la principal.</small>
+                    @if($Producto->imagenes->isNotEmpty())
+                        <div class="d-flex flex-wrap mt-2" style="gap: 0.5rem;">
+                            @foreach($Producto->imagenes as $imagen)
+                                <div class="border rounded p-1">
+                                    <img src="{{ asset('images/' . $imagen->ruta) }}" alt="Imagen {{ $loop->iteration }}" style="width: 80px; height: 80px; object-fit: cover;">
+                                </div>
+                            @endforeach
+                        </div>
+                    @elseif($Producto->imagen_producto)
                         <small class="form-text text-muted">Actual: {{ $Producto->imagen_producto }}</small>
                     @endif
                 </div>
