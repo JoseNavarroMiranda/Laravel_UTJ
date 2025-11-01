@@ -106,6 +106,11 @@
                     <div class="cart-summary-actions">
                         <a href="{{ route('dashboardecommerce.index') }}" class="btn secondary">Seguir comprando</a>
                         <button type="button" class="btn" disabled>Proceder al pago</button>
+                        @if($items->isNotEmpty() && Route::has('carrito.factura.pdf'))
+                            <a href="{{ route('carrito.factura.pdf') }}" class="btn primary">
+                                Descargar factura PDF
+                            </a>
+                        @endif
                     </div>
                 </div>
             </aside>

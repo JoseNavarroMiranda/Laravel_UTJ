@@ -51,7 +51,8 @@ class ClienteController extends Controller
         $cliente->email = $request->input('email');
         $cliente->password = bcrypt($request->input('password'));
         $cliente->save();
-        return redirect()->route('cliente.login')->with('success', 'Se ah registrado usuario de manera correcta');
+
+        return redirect()->route('cliente.index')->with('success', 'Cliente creado correctamente.');
     }
 
     /**

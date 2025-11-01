@@ -6,6 +6,7 @@ use App\Models\Carrito;
 use App\Models\CarritoItem;
 use App\Models\Pedido;
 use App\Models\Producto;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +42,47 @@ class CartController extends Controller
             'carrito' => $cart,
             'cartItems' => $items,
         ]);
+    }
+
+    public function downloadInvoice(Request $request)
+    {
+        $cart = $this->resolveCart($request);
+        $this->recalculateTotals($cart);
+        $cart->refresh()->load('items.producto');
+
+        if ($cart->items->isEmpty()) {
+            return redirect()
+                ->route('carrito.detalle')
+                ->withErrors(['carrito' => 'Tu carrito está vacío.']);
+        }
+
+        $items = $cart->items->map(function (CarritoItem $item) {
+            $producto = $item->producto;
+
+            return [
+                'nombre' => $producto->nombre_producto ?? 'Producto',
+                'descripcion' => $producto->descripcion ?? '',
+                'precio' => (float) $item->precio_unitario,
+                'cantidad' => (int) $item->cantidad,
+                'subtotal' => (float) $item->subtotal,
+            ];
+        })->values();
+
+        $cliente = Auth::guard('clientes')->user() ?? Auth::user();
+        $fechaFactura = now()->format('d/m/Y');
+        $total = (float) ($cart->total ?? $items->sum('subtotal'));
+
+        $pdf = Pdf::loadView('carrito.factura', [
+            'cart' => $cart,
+            'items' => $items,
+            'cliente' => $cliente,
+            'fechaFactura' => $fechaFactura,
+            'total' => $total,
+        ])->setPaper('letter', 'portrait');
+
+        $fileName = sprintf('factura-%s.pdf', now()->format('Ymd-His'));
+
+        return $pdf->download($fileName);
     }
 
     public function addacart(Request $request): RedirectResponse

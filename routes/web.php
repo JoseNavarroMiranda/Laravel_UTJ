@@ -54,6 +54,7 @@ Route::get('/carrito', [App\Http\Controllers\CartController::class, 'showcart'])
 Route::post('/carrito/agregar', [App\Http\Controllers\CartController::class, 'addacart'])->name('carrito.agregar');
 Route::put('/carrito/items/{item}', [App\Http\Controllers\CartController::class, 'update'])->name('carrito.actualizar');
 Route::delete('/carrito/items/{item}', [App\Http\Controllers\CartController::class, 'destroy'])->name('carrito.eliminar');
+Route::get('/carrito/factura/pdf', [App\Http\Controllers\CartController::class, 'downloadInvoice'])->name('carrito.factura.pdf');
 
 
 //Rutas para vistas de productos
